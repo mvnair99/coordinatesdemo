@@ -20,10 +20,7 @@
 	</properties>
 
 	<modules>
-		<module>nonrest</module>
 		<module>rest</module>
-		<module>evolution</module>
-		<module>links</module>
 	</modules>
 
 	<dependencies>
@@ -32,6 +29,11 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
-	
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20180130</version>
+    </dependency>
+  </dependencies>
+
 </project>
