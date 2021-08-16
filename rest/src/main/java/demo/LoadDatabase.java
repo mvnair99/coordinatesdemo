@@ -9,6 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +34,9 @@ class LoadDatabase {
   @Value("${numberOfCoordinates}")
   private int count;
 
+  @Value("${outputFile}")
+  private String outputFile;
+
   @Value("${key}")
   private String key;
 
@@ -51,6 +55,8 @@ class LoadDatabase {
 
 	@Bean
   CommandLineRunner initCoordinateDatabase(CoordinateRepository repository) {
+
+    PrintWriter writer = null;
     List coordinates = new ArrayList<Coordinate>();
     Coordinate coord = null;
     log.info("count = " + count);
@@ -60,30 +66,55 @@ class LoadDatabase {
       coordinates.add(coord);
     }
 
-
     Iterator i = coordinates.iterator();
 	  boolean isUS;
 	  try {
+      writer = new PrintWriter(outputFile);
+      writer.println("No of Coordinates = " + count);
+      int counter = 1;
       while (i.hasNext()) {
         coord = (Coordinate) i.next();
-        log.info("------------------------------");
+        writer.println("------------------------------");
         isUS = WithinUS.isWithinUS(coord.getLatitude(), coord.getLongitude(),key);
-        log.info("COORDINATE: " + coord.getLatitude() + ", " + coord.getLongitude() + "  Within US: " +  isUS);
+        writer.println(counter + ".) COORDINATE: " + coord.getLatitude() + ", " + coord.getLongitude() + "  Within US: " +  isUS);
         if (!isUS) {
           log.info("Distance in Nautical miles to: ");
+          writer.println("Distance in Nautical miles to: ");
           log.info("----Tokyo: " + DistanceBetweenPoints.distance(coord.getLatitude(), coord.getLongitude(),Coordinate.TOKYO.getLatitude(),Coordinate.TOKYO.getLongitude()) );
+          writer.println("----Tokyo: " + DistanceBetweenPoints.distance(coord.getLatitude(), coord.getLongitude(),Coordinate.TOKYO.getLatitude(),Coordinate.TOKYO.getLongitude()) );
+
           log.info("----Sydney: " + DistanceBetweenPoints.distance(coord.getLatitude(), coord.getLongitude(),Coordinate.SYDNEY.getLatitude(),Coordinate.SYDNEY.getLongitude()) );
+          writer.println("----Sydney: " + DistanceBetweenPoints.distance(coord.getLatitude(), coord.getLongitude(),Coordinate.SYDNEY.getLatitude(),Coordinate.SYDNEY.getLongitude()) );
+
           log.info("----Lima: " + DistanceBetweenPoints.distance(coord.getLatitude(), coord.getLongitude(),Coordinate.LIMA.getLatitude(),Coordinate.LIMA.getLongitude()) );
+          writer.println("----Lima: " + DistanceBetweenPoints.distance(coord.getLatitude(), coord.getLongitude(),Coordinate.LIMA.getLatitude(),Coordinate.LIMA.getLongitude()) );
+
           log.info("----Mexico City: " + DistanceBetweenPoints.distance(coord.getLatitude(), coord.getLongitude(),Coordinate.MEXICOCITY.getLatitude(),Coordinate.MEXICOCITY.getLongitude()) );
+          writer.println("----Mexico City: " + DistanceBetweenPoints.distance(coord.getLatitude(), coord.getLongitude(),Coordinate.MEXICOCITY.getLatitude(),Coordinate.MEXICOCITY.getLongitude()) );
+
           log.info("----Riyadh: " + DistanceBetweenPoints.distance(coord.getLatitude(), coord.getLongitude(),Coordinate.RIYADH.getLatitude(),Coordinate.RIYADH.getLongitude()) );
+          writer.println("----Riyadh: " + DistanceBetweenPoints.distance(coord.getLatitude(), coord.getLongitude(),Coordinate.RIYADH.getLatitude(),Coordinate.RIYADH.getLongitude()) );
+
           log.info("----Reykjavik: " + DistanceBetweenPoints.distance(coord.getLatitude(), coord.getLongitude(),Coordinate.REYKJAVIK.getLatitude(),Coordinate.REYKJAVIK.getLongitude()) );
+          writer.println("----Reykjavik: " + DistanceBetweenPoints.distance(coord.getLatitude(), coord.getLongitude(),Coordinate.REYKJAVIK.getLatitude(),Coordinate.REYKJAVIK.getLongitude()) );
+
           log.info("----Zurich: " + DistanceBetweenPoints.distance(coord.getLatitude(), coord.getLongitude(),Coordinate.ZURICH.getLatitude(),Coordinate.ZURICH.getLongitude()) );
+          writer.println("----Zurich: " + DistanceBetweenPoints.distance(coord.getLatitude(), coord.getLongitude(),Coordinate.ZURICH.getLatitude(),Coordinate.ZURICH.getLongitude()) );
         }
+        counter++;
       }
     }
 	  catch(Exception ex){
       log.error("",ex);
 	  }
+	  finally{
+	    try {
+        writer.close();
+      }
+	    catch(Exception e){
+	      log.error("",e);
+      }
+    }
 
     return args -> {
       log.info("Done loading DB. APIs up and running....");
@@ -91,4 +122,6 @@ class LoadDatabase {
   }
 
 
+  private class FileOutputStream {
+  }
 }
